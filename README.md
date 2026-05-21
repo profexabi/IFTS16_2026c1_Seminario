@@ -210,9 +210,134 @@ app.listen(3000, () => {
 
 
 ### 2.5 Creamos un front minimo para poder consumir nuestro primer endpoint basico -> tpIntegrador_Front
+#### *Front minimo creado en la carpeta front* `index.html`
+
+#### Creado nuestro HTML y llamado a nuestro endpoint, nos topamos con el error de CORS
+```js
+Access to fetch at 'http://localhost:3000/api/products' from origin 'null' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.
+```
+
+#### Que es CORS y por que bloquea la API?
+CORS (Cross-Origin Resource Sharing) es un mecanismo de seguridad implementado por los navegadores para restrigir las solicitudes HTTP que se realizan desde un dominio diferente al del servidor. Su propostio es prevenir ataques maliciosos, evitando que un sitio web malicioso acceda a recursos protegidos (cookies, tokens de autenticacion) de otro sitio sin autorizacion
+
+Cuando intentamos consumir nuestra propia API REST desde una aplicacion web alojada en un dominio distinto, en nuestro caso:
+
+- Front: `file:///home/xabier/Escritorio/Docencia/2026/IFTS16_2026c1_Seminario/tpSeminario_Front/index.html`
+- Back: `http://localhost:3000/api/products`
+
+El navegador bloquea la solicitud si el servidor de la API no incluye los headers adecuados de CORS. Esto ocurre porque el origen (protocolo, dominio y puerto) de la aplicacion cliente no coincide con el del servidor de la API, activando la politica CORS
+
+
+#### Por que no podemos consumir nuestra API Rest?
+- El navegador bloquea la solicitud si el servidor no respodne con las cabeceras de CORS necesarias.
+- El error tipico en la consola: *No 'Access-Allow-Origin' header is present*, lo que significa que el servidor no atuoriza el acceso desde nuestro origen
+
+#### Que solucion hay?
+Para permitir el acceso desde nuestro frontend, debemos configurar nuestra API REST para que respodna con las siguientes cabeceras HTTP
+```
+Access-Control-Allow-Origin: https://tufrontend.com
+Access-Control-Allow-Methods: GET, POST, PUT, DELETE
+Access-Control-Allow-Headers: Content-Type, Authorization
+```
+
+Para nuestra aplicacion con `Node.js` / `Express.js` vamos a usar el middleware `cors()` o manualmente configurar esas cabeceras
+
+---
+
+### 2.6 / Instalamos CORS y middlewares para que nuestro front pueda consumir esa informacion
+Los middlewares son funciones que se ejecutan durante el ciclo de solicitud y respuesta de una aplicacion.
+
+Estas funciones tienen acceso al objeto de solicitud `req` y al objeto de respuesta `res` y a la siguiente funcion de middleware en ese ciclo, que se denota normalmente como `next`.
+
+Los middlewares pueden realizar tareas como ejecutar codigo, modificar los objetos de solicitud y respuesta, finalizar el ciclo de solicitud/respuesta o invocar a la sigueinte funcion de middleware
+
+Los middlewares pueden ser de diferentes tipos, como middleware de nivel de aplicacion, que registramos usando `app.use()` y se aplicaca a todas las rutas y metodos de una aplicacion Express
+
+Los middlewares de terceros son funciones desarrolladas por la comunidad y publicadas en [npm](https://www.npmjs.com/package/cors) que permiten agregar funcionalidades adicionales a las aplicaciones de Node.js, como el analisis de cookies con el modulo cookie-parser, etc.
+
+Estos middlewares ayudan a separar las preocupaciones y gestionar rutas complejas de manera mas eficiente
+
+#### Instalamos [cors](https://www.npmjs.com/package/cors) en nuestro backend
+```sh
+npm i cors
+```
+
+En nuestro index.js
+```js
+import cors from "cors"; // Importamos el modulo CORS
+
+app.use(cors()); // Middleware CORS basico que permite todas las solicitudes
+
+// Middleware "logger" de aplicacion para analizar las solicitudes por consola
+app.use((req, res, next) => {
+    console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
+    next(); // Pasa al siguiente middleware
+});
+
+// Middleware para parsear en las solicitudes POST y PUT
+app.use(express.json());
+```
+
+Ahora podremos consumir los datos que proporciona nuestra API Rest desde una aplicacion frontend!
 
 
 ---
 
 
-### 2.6 Instalamos CORS y middlewares para que nuestro front pueda consumir esa informacion
+# 3. Creamos los endpoints basicos (sin optimizar) de nuestro CRUD
+
+### Conceptos fundamentales
+Un CRUD (Create, Read, Update, Delete) es una aplicacion que interatua con una base de datos efectuando las siguientes operaciones
+
+- **Create**: Lo hace a traves del verbo HTTP POST -> Envia datos al servidor. Se uas comunmente en formularios de registro, login, etc
+
+- **Read**: Lo hace a traves del verbo HTTP GET -> Obtiene datos del servidor, es la solicitud que hacemos desde el navegador para acceder a paginas web o buscar informacion
+
+- **Update**: Lo hace a traves del verbo HTTP PUT -> Actualiza informacion en el servidor
+
+- **Delete**: Lo hace a traves del verbo HTTP DELETE -> Elimina informacion en el servidor
+
+
+---
+
+
+### 3.1 / Creamos el endpoint GET products by id
+```js
+app.get("/api/products/:id", async (req, res) => {
+
+    // Extraemos el valor numerico de la url
+    let id = req.params.id;
+
+    let sql = "SELECT * FROM products where products.id = ?";
+
+    const [rows] = await connection.query(sql, [id]);
+
+    res.status(200).json({
+        payload: rows
+    });
+});
+```
+
+Probamos este endpoint accediendo a la URL: `http://localhost:3000/api/products/1`
+En caso de existir en nuestra BBDD un producto con id 1, nos lo mostrara
+
+```json
+{
+  "payload": [
+    {
+      "id": 1,
+      "name": "hamburguesa impossible",
+      "image": "https://burgernj.com/wp-content/uploads/2021/05/Impossible-Burger_.jpg",
+      "category": "food",
+      "price": "2000.00",
+      "active": 1
+    }
+  ]
+}
+```
+
+
+#### Prox clase: Vamos a consumir este endpoint desde el front
+1. Crearemos una pagina con un formulario donde meteremos el id
+2. Este id se insertara en la URL en nuestro fetch
+3. Recibiremos el producto de arriba que procederemos a mostrar en la pagina
