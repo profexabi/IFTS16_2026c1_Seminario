@@ -38,9 +38,17 @@
             </ul>
         </nav>
     </header>
-    <h1>Listado Productos</h1>
+    <h1>Consultar producto por id</h1>
 
     <main>
+        <form id="getProduct-form" class="formConsultaProducto">
+            <label for="idProd">Id del producto</label>
+            <input type="number" name="idProd" id="idProd" required>
+
+            <input type="submit" value="Consultar producto" class="btn-envio">
+        </form>
+
+        <hr>
 
         <div id="contenedor-productos">
             <!--
@@ -56,54 +64,58 @@
 
     <script>
         let contenedorProductos = document.getElementById("contenedor-productos");
+        let getProductForm = document.getElementById("getProduct-form");
+        const url = "http://localhost:3000/api/products/";
 
-        
-        async function mostrarProductos() {
+
+        getProductForm.addEventListener("submit", async event => {
+
+            // Prevenimos el envio por defecto del formulario
+            event.preventDefault();
+
+            // Agarramos el valor del campo de idProd
+            const idProd = event.target.idProd.value.trim();
+
+            // Vamos a hacer el fetch a la url personalizada
             try {
 
-                const respuesta = await fetch("http://localhost:3000/api/products");
+                // Solicitud HTTP GET
+                const response = await fetch(`${url}${idProd}`);
 
-                // Verificamos que la respuesta HTTP fue exitosa antes de parsear
-                if (!respuesta.ok) {
-                    throw new Error(`Error del servidor: ${respuesta.status}`);
+                // Parseo de datos JSON recibidos
+                const datos = await response.json();
+
+                // Evaluamos si el servidor respondio correctamete
+                if(!response.ok) { // Respuesta no positiva
+                    console.error(datos);
+                    // mostrarError(datos.error);
                 }
 
-                const { payload } = await respuesta.json();
-                console.log(payload); // Recibo correctamente el array de productos
+                mostrarProductos(datos.payload[0]);
 
-                renderizarProductos(payload);
 
-            // El catch solo nos captura errores reales de red: no hay internet, servidor caido
+
             } catch (error) {
-                console.error(`Error al cargar productos:`, error);
-
-                // Mostramos el error en el DOM
-                contenedorProductos.innerHTML = `<p class="info error">No se pudieron cargar los productos</p>`
+                console.error("Error al obtener el producto: ", error);
             }
+
+        })
+
+
+        function mostrarProductos(datos) {
+            let htmlProducto = "<ul>";
+
+            htmlProducto += `
+                <li class="listados">
+                    <img src="${datos.image}" alt="${datos.name}" class="img-listados"> Nombre: <p>${datos.name}</p> /<p>Id: ${datos.id}</p> /Precio: <p>${datos.price}$</p>
+                </li>
+            `;
+
+            htmlProducto += "</ul>";
+
+            contenedorProductos.innerHTML = htmlProducto;
         }
 
-
-        function renderizarProductos(payload) {
-            let htmlProductos = "";
-
-                // Creamos el HTML dinamico por cada producto de nuestra BBDD
-                payload.forEach(prod => {
-                    htmlProductos += `
-                        <div class="card-producto">
-                            <img src="${prod.image}" alt="${prod.name}" class="img-producto">
-                            <h3>${prod.name}</h3>
-                            <p>Id: ${prod.id}</p>
-                            <p>${prod.price}$</p>
-                        </div>
-                    `;
-                });
-
-                // Inyectamos todo el HTML dentro de nuestro contenedor
-                contenedorProductos.innerHTML = htmlProductos;
-        }
-
-        mostrarProductos();
-        
     </script>
 </body>
 </html>

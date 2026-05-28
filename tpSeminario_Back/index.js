@@ -65,6 +65,22 @@ app.get("/api/products/:id", async (req, res) => {
 });
 
 
+// POST product
+app.post("/api/products", async (req, res) => {
+
+    let { category, image, name, price } = req.body;
+
+    let sql = "INSERT INTO products (name, image, category, price) VALUES (?, ?, ?, ?)";
+
+    await connection.query(sql, [name, image, category, price]);
+
+    res.status(201).json({
+        message: "Producto creado con exito"
+    });
+
+});
+
+
 
 app.listen(PORT, () => {
     console.log(`Servidor corriendo en el puerto ${PORT}`);

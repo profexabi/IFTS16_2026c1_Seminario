@@ -1,5 +1,22 @@
 # IFTS 16 2026 c1 Seminario
 
+# Apuntes clases
+### Proximos pasos
+1. Crear endpoint PUT para modificar producto
+2. Crear vista PUT para modificar producto (combinaremos el get by id + form crear producto)
+3. Crear endpoint DELETE
+4. Crear vista DELETE para eliminar producto
+
+### Pendientes
+- **Documentar TODO**
+- Optimizacion de endpoints
+- Optimizacion de consultas a la API
+- Aplicar patron MVC -> Modularizar la app
+- Setup EJS -> Migrar las vistas para que las sirva el servidor
+
+---
+
+
 # TP Seminario
 
 ## 1. Arrancando un servidor minimo
@@ -335,9 +352,3 @@ En caso de existir en nuestra BBDD un producto con id 1, nos lo mostrara
   ]
 }
 ```
-
-
-#### Prox clase: Vamos a consumir este endpoint desde el front
-1. Crearemos una pagina con un formulario donde meteremos el id
-2. Este id se insertara en la URL en nuestro fetch
-3. Recibiremos el producto de arriba que procederemos a mostrar en la pagina
