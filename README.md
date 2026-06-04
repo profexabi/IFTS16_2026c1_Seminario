@@ -2,10 +2,11 @@
 
 # Apuntes clases
 ### Proximos pasos
-1. Crear endpoint PUT para modificar producto
-2. Crear vista PUT para modificar producto (combinaremos el get by id + form crear producto)
-3. Crear endpoint DELETE
-4. Crear vista DELETE para eliminar producto
+1. **DONE** Crear endpoint DELETE
+2. **DONE** Crear vista DELETE para eliminar producto
+
+3. Crear endpoint PUT para modificar producto
+4. Crear vista PUT para modificar producto (combinaremos el get by id + form crear producto)
 
 ### Pendientes
 - **Documentar TODO**

@@ -3,7 +3,13 @@
 =================*/
 
 :root {
-    --rojo-background: #ec0c14
+    --rojo-background: #ec0c14;
+    --exito-background: #d1e7dd ;
+    --exito-color: #0a3622;
+    --exito-border: #a3cfbb;
+    --error-background: #f8d7da ;
+    --error-color: #58151c;
+    --error-border: #f1aeb5;
 }
 
 body {
@@ -96,7 +102,7 @@ ul {
 .listados {
     display: flex;
     width: 100%;
-    justify-content: center;
+    justify-content: end;
     align-items: center;
 }
 
@@ -139,7 +145,38 @@ ul {
     border-radius: 2px;
 }
 
+.btn-lista {
+    font-size: 15px;
+    padding: 7px;
+    border: 2px solid transparent;
+}
+
+.btn-lista:hover {
+    cursor: pointer;
+    color: var(--rojo-background);
+    background-color: white;
+    border: 2px solid var(--rojo-background);
+}
+
 hr {
     margin-top: 30px;
     margin-bottom: 15px;    
+}
+
+.exito, .error {
+    margin: 0 auto;
+    padding: 10px 35px;
+    border-radius: 5px;
+}
+
+.exito {
+    color: var(--exito-color);
+    background-color: var(--exito-background);
+    border: 2px solid var(--exito-border);
+}
+
+.error {
+    color: var(--error-color);
+    background-color: var(--error-background);
+    border: 2px solid var(--error-border);
 }

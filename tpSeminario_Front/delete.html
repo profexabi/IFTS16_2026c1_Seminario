@@ -102,18 +102,60 @@
         })
 
 
-        function mostrarProductos(datos) {
+        function mostrarProductos(producto) {
             let htmlProducto = "<ul>";
 
             htmlProducto += `
                 <li class="listados">
-                    <img src="${datos.image}" alt="${datos.name}" class="img-listados"> Nombre: <p><strong>${datos.name}</strong></p> / <p>Id: <strong>${datos.id}</strong></p> / Precio: <p><strong>$${datos.price}</strong></p>
+                    <img src="${producto.image}" alt="${producto.name}" class="img-listados"> Nombre: <p> <strong>${producto.name}</strong></p> / <p>Id: <strong>${producto.id}</strong></p> / Precio: <p><strong>$${producto.price}</strong></p>
+
+                    <input type="button" id="deleteProduct_button" class="btn-envio btn-lista" value="Eliminar producto">
                 </li>
             `;
 
             htmlProducto += "</ul>";
 
             contenedorProductos.innerHTML = htmlProducto;
+
+            // Asignaremos un evento al boton eliminar
+            const deleteProductButton = document.getElementById("deleteProduct_button");
+
+            deleteProductButton.addEventListener("click", event => {
+                event.preventDefault();
+
+                const confirmacion = confirm("Queres eliminar este producto?");
+
+                if(!confirmacion) {
+                    alert("Eliminacion cancelada");
+                } else {
+                    eliminarProducto(producto.id);
+                }
+            });
+
+            async function eliminarProducto(id) {
+                try {
+                    const response = await fetch(`${url}${id}`, {
+                        method: "DELETE"
+                    });
+
+                    const result = await response.json();
+
+                    if(response.ok) {
+                        alert(result.message);
+
+                        // TO DO, mensaje fondo verde indicando exito
+                        // Vaciamos la lista
+                        contenedorProductos.innerHTML = `<p class='exito'>${result.message}</p>`;
+                    } else {
+                        console.error("Error en la solicitud DELETE: ", error.message);
+                        alert(error.message);
+                    }
+
+                } catch (error) {
+                    console.error("Error en la solicitud DELETE", error);
+                    alert("Error al eliminar el producto", error);
+                }
+            }
         }
 
     </script>

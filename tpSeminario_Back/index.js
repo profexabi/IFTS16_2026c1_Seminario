@@ -77,7 +77,21 @@ app.post("/api/products", async (req, res) => {
     res.status(201).json({
         message: "Producto creado con exito"
     });
+});
 
+
+// PUT product
+
+
+// DELETE product
+app.delete("/api/products/:id", async (req, res) => {
+    const { id } = req.params;
+
+    await connection.query("DELETE FROM products WHERE id = ?", [id]);
+
+    res.status(200).json({
+        message: `Producto con id ${id} eliminado correctamente`
+    });
 });
 
 
