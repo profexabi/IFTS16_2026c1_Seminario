@@ -81,6 +81,18 @@ app.post("/api/products", async (req, res) => {
 
 
 // PUT product
+app.put("/api/products", async(req, res) => {
+    const { id, name, image, price, category } = req.body;
+
+    const sql = "UPDATE products SET name = ?, image = ?, price = ?, category = ? WHERE id = ?";
+
+    await connection.query(sql, [name, image, price, category, id]);
+
+    return res.status(200).json({
+        message: "Producto actualizado correctamente"
+    });
+});
+
 
 
 // DELETE product
