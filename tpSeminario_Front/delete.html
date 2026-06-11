@@ -76,6 +76,11 @@
             // Agarramos el valor del campo de idProd
             const idProd = event.target.idProd.value.trim();
 
+            // Optimizacion 1: Nos aseguramos de que se haya enviado un id valido y mandamos mensaje de error
+            if(!idProd) {
+                contenedorProductos.innerHTML = `<p class="info error">Ingresa un id valido</p>`
+            }
+
             // Vamos a hacer el fetch a la url personalizada
             try {
 
@@ -88,7 +93,8 @@
                 // Evaluamos si el servidor respondio correctamete
                 if(!response.ok) { // Respuesta no positiva
                     console.error(datos);
-                    // mostrarError(datos.error);
+                    mostrarError(datos.message);
+                    return;
                 }
 
                 mostrarProductos(datos.payload[0]);
@@ -132,30 +138,42 @@
                 }
             });
 
-            async function eliminarProducto(id) {
-                try {
-                    const response = await fetch(`${url}${id}`, {
-                        method: "DELETE"
-                    });
+        }
 
-                    const result = await response.json();
+        async function eliminarProducto(id) {
+            try {
+                const response = await fetch(`${url}${id}`, {
+                    method: "DELETE"
+                });
 
-                    if(response.ok) {
-                        alert(result.message);
+                console.log(response); // Response {type: 'cors', url: 'http://localhost:3000/api/products/55', redirected: false, status: 204, ok: true, …}
 
-                        // TO DO, mensaje fondo verde indicando exito
-                        // Vaciamos la lista
-                        contenedorProductos.innerHTML = `<p class='exito'>${result.message}</p>`;
-                    } else {
-                        console.error("Error en la solicitud DELETE: ", error.message);
-                        alert(error.message);
-                    }
+                // En 204 no content no funciona response.json
+                const result = response.status !== 204 ? await response.json() : null;
+                
+                if (response.ok) {
+                    // Esto generaba un error, ya que en 204 no se parsea la respuesta!
+                    // alert(result.message);
+    
+                    // TO DO, mensaje fondo verde indicando exito
+                    // Vaciamos la lista
+                    contenedorProductos.innerHTML = `<p class='exito'>Producto con id ${id} eliminado exitosamente</p>`;
 
-                } catch (error) {
-                    console.error("Error en la solicitud DELETE", error);
-                    alert("Error al eliminar el producto", error);
+                } else {
+                    console.error("Error 1 en la solicitud DELETE: ", error.message);
+                    alert(error.message);
                 }
+
+            
+
+            } catch (error) {
+                console.error("Error 2 en la solicitud DELETE", error);
+                alert("Error al eliminar el producto", error);
             }
+        }
+
+        function mostrarError(mensaje) {
+            contenedorProductos.innerHTML = `<p class="info error">${mensaje}</p>`
         }
 
     </script>

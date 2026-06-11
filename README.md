@@ -2,17 +2,17 @@
 
 # Apuntes clases
 ### Proximos pasos
-1. **DONE** Crear endpoint DELETE
-2. **DONE** Crear vista DELETE para eliminar producto
-
-3. Crear endpoint PUT para modificar producto
-4. Crear vista PUT para modificar producto (combinaremos el get by id + form crear producto)
-
-### Pendientes
 - **Documentar TODO**
 - Optimizacion de endpoints
+    - Optimizar POST
+    - Optimizar PUT
+
 - Optimizacion de consultas a la API
+    - Optimizar vista POST
+    - Optimizar vista PUT
+
 - Aplicar patron MVC -> Modularizar la app
+
 - Setup EJS -> Migrar las vistas para que las sirva el servidor
 
 ---

@@ -27,6 +27,20 @@ app.use((req, res, next) => {
 // Middleware para parsear en las solicitudes POST y PUT
 app.use(express.json());
 
+// Middleware de ruta (al contrario que el de aplicacion, se aplica a ciertas rutas)
+const validateId = (req, res, next) => {
+    const id = Number(req.params.id);
+
+    if (!Number.isInteger(id) || id <= 0) {
+        return res.status(400).json({
+            error: "El ID debe ser un entero positivo"
+        });
+    }
+
+    req.id = id;
+    next();
+}
+
 
 
 ///////////////
@@ -38,7 +52,15 @@ app.get("/", (req, res) => {
 // GET all products
 app.get("/api/products", async (req, res) => {
     try {
-        const [rows] = await connection.query("SELECT * FROM products");
+        // Optimizacion 1: la consulta pidiendo las columnas necesarias
+        const [rows] = await connection.query("SELECT id, name, price, image FROM products");
+
+        // Optimizacion 2: Devolvemos un 404 si no hay productos
+        if (rows.length === 0) {
+            return res.status(404).json({
+                message: "No se encontraron productos"
+            });
+        }
         
         res.status(200).json({
             payload: rows
@@ -46,22 +68,48 @@ app.get("/api/products", async (req, res) => {
 
     } catch (error) {
         console.error("Error obteniendo productos", error.message);
+
+        // Optimizacion 3: Si fallo la conexion a la BBDD, devolveremos un mensaje de error generico
+        res.status(500).json({
+            message: "Error interno al obtener productos"
+        });
     }
 });
 
 // GET product by id
-app.get("/api/products/:id", async (req, res) => {
+app.get("/api/products/:id", validateId, async (req, res) => {
 
-    // Extraemos el valor numerico de la url
-    let id = req.params.id;
+    // Optimizacion 1: Incorporamos manejo de errores con try catch en el endpoint
+    try {
+        // Optimizacion 2: Ya se encarga de proveer y validar el id el middleare validateId
 
-    let sql = "SELECT * FROM products where products.id = ?";
+        // Optimizacion 3: Pedimos los campos necesarios
+        let sql = "SELECT id, name, price, image FROM products where products.id = ?";
 
-    const [rows] = await connection.query(sql, [id]);
+        // Aca incorporamos el id que el middleware agrego a la request
+        const [rows] = await connection.query(sql, [req.id]);
 
-    res.status(200).json({
-        payload: rows
-    });
+
+        // Optimizacion 4: Devolvemos un 404 si no existe ese producto
+        if (rows.length === 0) {
+            return res.status(404).json({
+                message: `No se encontraron productos con id ${req.id}`
+            });
+        }
+
+        res.status(200).json({
+            payload: rows
+        });
+
+    } catch (error) {
+        console.log(`Error obteniendo producto con id ${req.id}`, error.message);
+
+        // Optimizacion 4: Devolvemos un codigo 500
+        res.status(500).json({
+            message: `Error interno al obtener un producto por id`
+        });
+    }
+
 });
 
 
@@ -96,14 +144,29 @@ app.put("/api/products", async(req, res) => {
 
 
 // DELETE product
-app.delete("/api/products/:id", async (req, res) => {
-    const { id } = req.params;
+app.delete("/api/products/:id", validateId, async (req, res) => {
+    // Optimizacion 1: manejo de errores con try catch
+    try {
+        // Optimizacion 3: Prescindimos de const { id } = req.params; gracias a validateId
+    
+        // Optimizacion 4: Extraemos el resultado en [result]
+        const [result] = await connection.query("DELETE FROM products WHERE id = ?", [req.id]);
 
-    await connection.query("DELETE FROM products WHERE id = ?", [id]);
+        // console.log(result);
+    
+        // Optimizacion 5: Devolver un codigo 204, la convencion REST es 204 para un No Content
+        res.status(204).json({
+            message: `Producto con id ${req.id} eliminado correctamente`
+        });
 
-    res.status(200).json({
-        message: `Producto con id ${id} eliminado correctamente`
-    });
+    } catch (error) {
+        console.log(`Error en peticion DELETE:`, error);
+
+        // Optimizacion 2: Devolvemos una respuesta 500 en caso de error en la conexion a la BBDD
+        res.status(500).json({
+            message: "Error interno del servidor"
+        })
+    }
 });
 
 
