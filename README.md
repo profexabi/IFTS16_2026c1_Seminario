@@ -1,10 +1,16 @@
 # IFTS 16 2026 c1 Seminario
 
 # Apuntes clases
-### Proximos pasos
-- Aplicar patron MVC -> Modularizar la app
+#### Prox clase 24/06
+- Terminar de modularizar los modelos
+    - middlewares
+    - routes
+    - controllers
 
 - Setup EJS -> Migrar las vistas para que las sirva el servidor
+
+#### Prox clase 01/07
+**PRESENCIAL / Presentacion de proyectos de Seminario**
 
 ---
 
