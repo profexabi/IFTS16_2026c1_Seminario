@@ -70,7 +70,7 @@
         let getProductForm = document.getElementById("getProduct-form");
         const updateProductsContainer = document.getElementById("updateProducts-container");
 
-        const url = "http://localhost:3000/api/products/";
+        const url = "http://localhost:3000/api/products";
 
 
         getProductForm.addEventListener("submit", async event => {
@@ -81,11 +81,16 @@
             // Agarramos el valor del campo de idProd
             const idProd = event.target.idProd.value.trim();
 
+            // Optimizacion 1: Nos aseguramos de que se haya enviado un id valido y mandamos mensaje de error
+            if(!idProd) {
+                contenedorProductos.innerHTML = `<p class="info error">Ingresa un id valido</p>`
+            }
+
             // Vamos a hacer el fetch a la url personalizada
             try {
 
                 // Solicitud HTTP GET
-                const response = await fetch(`${url}${idProd}`);
+                const response = await fetch(`${url}/${idProd}`);
 
                 // Parseo de datos JSON recibidos
                 const datos = await response.json();
@@ -93,15 +98,15 @@
                 // Evaluamos si el servidor respondio correctamete
                 if(!response.ok) { // Respuesta no positiva
                     console.error(datos);
-                    // mostrarError(datos.error);
+                    mostrarMensaje("error", datos.message);
+                    return;
                 }
 
                 mostrarProductos(datos.payload[0]);
 
-
-
             } catch (error) {
                 console.error("Error al obtener el producto: ", error);
+                mostrarMensaje("error", "Error de conexion con el servidor")
             }
 
         })
@@ -177,6 +182,7 @@
             });
         }
 
+
         // Enviamos los datos del formulario al servidor
         async function actualizarProducto(event) {
             event.preventDefault();
@@ -185,6 +191,12 @@
             const data = Object.fromEntries(formData.entries());
 
             console.log(data); // {id: '1', category: 'food', image: 'https://www.mostazaweb.com.ar/wp-content/uploads/2026/03/MAY0-3-copia.png', name: 'hamburguesa cuatricampeona', price: '1000.00'}
+
+            // Optimizacion 2: Validacion de datos en el cliente
+            if (!data.name || !data.image || !data.category || !data.price) {
+                mostrarMensaje("error", "Todos los campos son obligatorios");
+                return;
+            }
 
             try {
                 const response = await fetch(url, {
@@ -197,16 +209,27 @@
 
                 const result = await response.json();
 
+                if (!response.ok) {
+                    console.error(result.message);
+                    updateProductsContainer.innerHTML = "";
+                    mostrarMensaje("error", result.message);
+                    return;
+                }
+
                 console.log(result.message);
-                alert(result.message);
+                mostrarMensaje("exito", result.message);
 
                 // Limpiamos el formulario al actualizar el producto
                 updateProductsContainer.innerHTML = "";
 
             } catch (error) {
                 console.error("Error al enviar los datos", error.message);
-                alert("Error al procesar la solicitud");
+                mostrarMensaje("error", "Error al procesar la solicitud");
             }
+        }
+
+        function mostrarMensaje(tipo, mensaje) {
+            contenedorProductos.innerHTML = `<p class="info ${tipo}">${mensaje}</p>`
         }
 
     </script>

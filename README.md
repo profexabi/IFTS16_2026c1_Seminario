@@ -2,15 +2,6 @@
 
 # Apuntes clases
 ### Proximos pasos
-- **Documentar TODO**
-- Optimizacion de endpoints
-    - Optimizar POST
-    - Optimizar PUT
-
-- Optimizacion de consultas a la API
-    - Optimizar vista POST
-    - Optimizar vista PUT
-
 - Aplicar patron MVC -> Modularizar la app
 
 - Setup EJS -> Migrar las vistas para que las sirva el servidor

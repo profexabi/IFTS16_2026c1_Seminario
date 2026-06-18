@@ -42,6 +42,40 @@ const validateId = (req, res, next) => {
 }
 
 
+// Middleware de ruta validateProduct para validar los campos de un formulario
+const categoriasValidas = ["food", "drink"];
+const validateProduct = (req, res, next) => {
+
+    // Recogemos los datos del body
+    const { name, price, category } = req.body;
+    const errores = [];
+
+    if (!name || !price || !category) {
+        errores.push("Datos invalidos, asegurate de incluir todas las categorias");
+    }
+
+    if (typeof name !== "string" || name.trim().length < 2) {
+        errores.push("El nombre debe tener al menos 2 caracteres");
+    }
+
+    if (typeof price !== "number" || price <= 0) {
+        errores.push("El precio debe ser un numero mayor a 0");
+    }
+
+    if (!categoriasValidas.includes(category)) {
+        errores.push("Categorias invalidas");
+    }
+
+    if (errores.length > 0) {
+        return res.status(400).json({
+            message: "Datos invalidos", errores
+        });
+    }
+
+    next();
+}
+
+
 
 ///////////////
 // Endpoints
@@ -114,31 +148,68 @@ app.get("/api/products/:id", validateId, async (req, res) => {
 
 
 // POST product
-app.post("/api/products", async (req, res) => {
+app.post("/api/products", validateProduct, async (req, res) => {
 
-    let { category, image, name, price } = req.body;
+    // Optimizacion 1: Incorporamos manejo de errores con try...catch
+    try {
+        // Optimizacion 2: Middleware validateProduct ya se encarga de validar los datos enviados
+    
+        let { category, image, name, price } = req.body;
+        console.log(req.body)
+    
+        let sql = "INSERT INTO products (name, image, category, price) VALUES (?, ?, ?, ?)";
+    
+        // Optimizacion 4: Devolvemos el id asignado al nuevo producto
+        const [rows] = await connection.query(sql, [name, image, category, price]);
+    
+        res.status(201).json({
+            message: "Producto creado con exito",
+            productId: rows.insertId // Devolvemos tambien el nuevo id creado
+        });
 
-    let sql = "INSERT INTO products (name, image, category, price) VALUES (?, ?, ?, ?)";
 
-    await connection.query(sql, [name, image, category, price]);
+    } catch (error) {
+        console.log(error);
 
-    res.status(201).json({
-        message: "Producto creado con exito"
-    });
+        // Optimizacion 3: Devolvemos una respuesta con codigo de estado 500
+        res.status(500).json({
+            message: "Error interno del servidor"
+        })
+    }
+
 });
 
 
 // PUT product
 app.put("/api/products", async(req, res) => {
-    const { id, name, image, price, category } = req.body;
 
-    const sql = "UPDATE products SET name = ?, image = ?, price = ?, category = ? WHERE id = ?";
+    // Optimizacion 1: Incorporando manejo de errores
+    try {
+        const { id, name, image, price, category } = req.body;
 
-    await connection.query(sql, [name, image, price, category, id]);
+        // Optimizacion 2: Validamos que recibamos los datos necesarios
+        if (!id || !name || !image || !price || !category) {
+            return res.status(400).json({
+                message: "Todos los campos son requeridos (name, image, price y category)"
+            });
+        }
+    
+        const sql = "UPDATE productss SET name = ?, image = ?, price = ?, category = ? WHERE id = ?";
+    
+        await connection.query(sql, [name, image, price, category, id]);
+    
+        return res.status(200).json({
+            message: `Producto con id ${id} actualizado correctamente`
+        });
 
-    return res.status(200).json({
-        message: "Producto actualizado correctamente"
-    });
+    } catch (error) {
+        console.log(error);
+
+        // Optimizacion 3: Incorporamos una respuesta 500 al cliente
+        res.status(500).json({
+            message: "Error interno al actualizar el producto"
+        })
+    }
 });
 
 
