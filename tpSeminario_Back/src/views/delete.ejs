@@ -1,0 +1,30 @@
+<%- include("partials/head.ejs") %>
+<%- include("partials/nav.ejs") %>
+
+    <h1><%= about %></h1>
+
+    <main>
+        <form id="getProduct-form" class="formConsultaProducto">
+            <label for="idProd">Id del producto</label>
+            <input type="number" name="idProd" id="idProd" required>
+
+            <input type="submit" value="Consultar producto" class="btn-envio">
+        </form>
+
+        <hr>
+
+        <div id="contenedor-productos">
+            <!--
+            <div class="card-producto">
+                <img src="https://cdn11.bigcommerce.com/s-3stx4pub31/images/stencil/160w/products/9026/27419/Fernet_Branca_Herbal_Infusion_Bitter_Amaro_Liqueur_Genuine_Argentina_Flavor_Recipe_750_ml_25.4_oz_pack_of_2__06645.1707510967.jpg?c=3" alt="fernet branca" class="img-producto">
+                <h3>Fernet Branca</h3>
+                <p>Id: 1</p>
+                <p>7000$</p>
+            </div>
+            -->
+        </div>
+    </main>
+
+<script src="/js/delete.js"></script>
+
+<%- include("partials/footer.ejs") %>

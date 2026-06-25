@@ -1,0 +1,23 @@
+<%- include("partials/head.ejs") %>
+<%- include("partials/nav.ejs") %>
+
+    <h1><%= about %></h1>
+
+    <main>
+
+        <div id="contenedor-productos">
+            <!-- Recorremos el array de productos que le manda el controlador -->
+            <% productList.forEach(prod => { %>
+                
+                <div class="card-producto">
+                    <img src="<%=prod.image%>" alt="<%=prod.name%>" class="img-producto">
+                    <h3><%=prod.name%></h3>
+                    <p>Id: <%=prod.id%></p>
+                    <p><%=prod.price%>$</p>
+                </div>
+
+            <% }) %>
+        </div>
+    </main>
+
+<%- include("partials/footer.ejs") %>

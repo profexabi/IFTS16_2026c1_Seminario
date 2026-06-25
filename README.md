@@ -2,12 +2,19 @@
 
 # Apuntes clases
 #### Prox clase 24/06
-- Terminar de modularizar los modelos
+- **DONE** Terminar de modularizar los modelos
     - middlewares
     - routes
     - controllers
+    - models
 
-- Setup EJS -> Migrar las vistas para que las sirva el servidor
+- **DONE** Setup EJS -> Migrar las vistas para que las sirva el servidor
+
+- Falta endpoint POST para /login
+
+
+---
+
 
 #### Prox clase 01/07
 **PRESENCIAL / Presentacion de proyectos de Seminario**

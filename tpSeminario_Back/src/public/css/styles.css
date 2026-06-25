@@ -185,3 +185,12 @@ hr {
     background-color: var(--error-background);
     border: 2px solid var(--error-border);
 }
+
+#updateProducts-container h2 {
+    text-align: center;
+}
+
+#login-form {
+    width: 40%;
+    height: 175px;
+}

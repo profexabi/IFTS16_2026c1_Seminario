@@ -1,12 +1,15 @@
-import connection from "../database/db.js";
+/*=======================
+    Controladores
+=======================*/
 
+import ProductModels from "../models/product.models.js";
 
 /////////////////////
 // GET all products
 export const getAllProducts = async (req, res) => {
     try {
-        // Optimizacion 1: la consulta pidiendo las columnas necesarias
-        const [rows] = await connection.query("SELECT id, name, price, image FROM products");
+        
+        const [rows] = await ProductModels.selectAllProducts();
 
         // Optimizacion 2: Devolvemos un 404 si no hay productos
         if (rows.length === 0) {
@@ -39,11 +42,9 @@ export const getProductById = async (req, res) => {
     try {
         // Optimizacion 2: Ya se encarga de proveer y validar el id el middleare validateId
 
-        // Optimizacion 3: Pedimos los campos necesarios
-        let sql = "SELECT id, name, price, image FROM products where products.id = ?";
-
+    
         // Aca incorporamos el id que el middleware agrego a la request
-        const [rows] = await connection.query(sql, [req.id]);
+        const [rows] = await ProductModels.selectProductsById(req.id);
 
 
         // Optimizacion 4: Devolvemos un 404 si no existe ese producto
@@ -83,10 +84,9 @@ export const createProduct = async (req, res) => {
         let { category, image, name, price } = req.body;
         console.log(req.body)
     
-        let sql = "INSERT INTO products (name, image, category, price) VALUES (?, ?, ?, ?)";
-    
+        
         // Optimizacion 4: Devolvemos el id asignado al nuevo producto
-        const [rows] = await connection.query(sql, [name, image, category, price]);
+        const [rows] = await ProductModels.insertNewProduct(name, image, category, price);
     
         res.status(201).json({
             message: "Producto creado con exito",
@@ -121,9 +121,8 @@ export const modifyProduct = async(req, res) => {
             });
         }
     
-        const sql = "UPDATE products SET name = ?, image = ?, price = ?, category = ? WHERE id = ?";
     
-        await connection.query(sql, [name, image, price, category, id]);
+        await ProductModels.updateProduct(name, image, price, category, id);
     
         return res.status(200).json({
             message: `Producto con id ${id} actualizado correctamente`
@@ -149,7 +148,7 @@ export const removeProduct = async (req, res) => {
         // Optimizacion 3: Prescindimos de const { id } = req.params; gracias a validateId
     
         // Optimizacion 4: Extraemos el resultado en [result]
-        const [result] = await connection.query("DELETE FROM products WHERE id = ?", [req.id]);
+        const [result] = await ProductModels.deleteProduct(req.id);
 
         // console.log(result);
     
