@@ -5,6 +5,7 @@
 import { Router } from "express";
 import { createView, deleteView, getView, indexView, updateView } from "../controllers/view.controllers.js";
 import { requireLogin } from "../middlewares/middlewares.js";
+
 const router = Router();
 
 
