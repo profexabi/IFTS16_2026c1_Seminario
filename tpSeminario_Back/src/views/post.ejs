@@ -33,7 +33,30 @@
 
         <hr>
 
+
         <div id="contenedor-productos"></div>
+
+
+        <hr>
+
+        <form id="postUser-form" class="formAltaProducto">
+            
+            <!-- Nombre -->
+            <label for="nameUser">Nombre</label>
+            <input type="text" name="nameUser" id="nameUser" required>
+
+            <!-- Email -->
+            <label for="mailUser">Email</label>
+            <input type="email" name="mailUser" id="mailUser" required>
+
+            <!-- Password -->
+            <label for="passwordUser">Password</label>
+            <input type="password" name="passwordUser" id="passwordUser" required>
+
+            <input type="submit" class="btn-envio" value="Crear usuario">
+
+        </form>
+        
     </main>
 
     <script src="/js/post.js"></script>

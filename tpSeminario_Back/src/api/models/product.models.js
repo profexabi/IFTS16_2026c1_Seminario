@@ -1,5 +1,5 @@
 /*=======================
-    Modelos
+    Modelos productos
 =======================*/
 
 import connection from "../database/db.js";

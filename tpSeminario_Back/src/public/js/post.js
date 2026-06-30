@@ -2,6 +2,10 @@ const postProductForm = document.getElementById("postProduct-form");
 const contenedorProductos = document.getElementById("contenedor-productos");
 const url = "http://localhost:3000/api/products";
 
+const postUserForm = document.getElementById("postUser-form");
+const contenedorUsuarios = document.getElementById("contenedor-usuarios");
+const urlUsers = "http://localhost:3000/api/users";
+
 
 // Optimizacion 1: Validacion previa de datos en el cliente
 function validarFormulario(data) {
@@ -29,6 +33,48 @@ function mostrarMensaje(tipo, mensaje) {
     contenedorProductos.innerHTML = `<p class="info ${tipo}">${mensaje}</p>`
 }
 
+////////////////////////
+// Creacion de usuarios
+postUserForm.addEventListener("submit", async event => {
+    event.preventDefault();
+
+    let formData = new FormData(event.target);
+    let data = Object.fromEntries(formData.entries());
+    console.table(data);
+
+    try {
+        console.log("test")
+        const response = await fetch(urlUsers, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data)
+        });
+        console.log("test 2")
+
+        console.log(response);
+
+        const result = await response.json();
+        console.log(result);
+
+        if(!response.ok) {
+            const mensaje = result.errores?join("\n") : result.message;
+            mostrarMensaje("error", mensaje);
+            return;
+        }
+        
+        console.log(result.message);
+        mostrarMensaje("exito", result.message);
+
+    } catch (error) {
+        console.error(error)
+    }
+});
+
+
+////////////////////////
+// Creacion de productos
 postProductForm.addEventListener("submit", async event => {
 
     event.preventDefault(); // Evitamos el envio por defecto del formulario

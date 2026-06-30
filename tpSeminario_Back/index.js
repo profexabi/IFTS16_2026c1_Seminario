@@ -4,7 +4,7 @@ import express from "express";
 import environments from "./src/api/config/environments.js"; // Traemos las variables de entorno
 import cors from "cors"; // Importamos el modulo CORS
 import { loggerURL} from "./src/api/middlewares/middlewares.js";
-import { authRoutes, productRoutes, viewRoutes } from "./src/api/routes/index.js";
+import { authRoutes, productRoutes, userRoutes, viewRoutes } from "./src/api/routes/index.js";
 import { join, __dirname } from "./src/api/utils/index.js";
 import session from "express-session";
 
@@ -55,6 +55,7 @@ app.use(express.urlencoded({
 ///////////////
 // Endpoints
 app.use("/api/products", productRoutes);
+app.use("/api/users", userRoutes);
 app.use("/dashboard", viewRoutes);
 app.use("/login", authRoutes);
 

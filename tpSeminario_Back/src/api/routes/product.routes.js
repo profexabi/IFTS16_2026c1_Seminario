@@ -1,5 +1,5 @@
 /*=======================
-    Rutas
+    Rutas producto
 =======================*/
 
 import { Router } from "express";
